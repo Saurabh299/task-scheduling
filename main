@@ -1,0 +1,100 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+#include<iomanip> // using the format output stream 
+using namespace std;
+
+class Process{ 
+    public:
+    int pid;
+    int arrival_time;
+    int burst_time;
+    int _priority;
+    int start_time;
+    int completion_time;
+    int turn_around_time;
+    int waiting_time;
+    int remaining_time;
+    bool finish;
+    
+    Process(int id, int at, int bt, int priority){
+        pid=id;
+        arrival_time=at;
+        burst_time=bt;
+        _priority=priority;
+        remaining_time=bt;
+        finish=false;
+    }
+};
+bool comprator(Process &a, Process &b){ // coustom base comprator
+return a.arrival_time<b.arrival_time;
+}
+void FCFS(vector<Process>processes){
+    sort(processes.begin(),processes.end(),comprator);
+    int current_time=0;
+    float total_waiting=0,total_turn_around=0;
+    cout<<"Chairt"<<endl;
+
+    for(auto &p:processes){ // processing each element on total vector process
+        if(current_time<p.arrival_time)
+        current_time=p.arrival_time;
+
+    p.start_time=current_time;
+    current_time+=p.arrival_time;
+    p.completion_time=current_time;
+    p.turn_around_time=p.completion_time-p.arrival_time;
+    p.waiting_time=p.turn_around_time-p.burst_time;
+
+    total_waiting+=p.waiting_time;
+    total_turn_around+=p.turn_around_time;
+    cout<<" | p"<<p.pid<<" ";
+    }
+    cout<<endl;
+
+      cout << "\nProcess\tAT\tBT\tCT\tTAT\tWT\n";
+    for (const auto &p : processes) {
+        cout << "P" << p.pid << "\t" << p.arrival_time << "\t"
+             << p.burst_time << "\t" << p.completion_time << "\t"
+             << p.turn_around_time<< "\t" << p.waiting_time << "\n";
+    }
+
+    cout << fixed << setprecision(2); // giving the double/float number with the 2 precision 
+    cout << "\nAverage Waiting Time = " << total_waiting / processes.size() << endl;
+    cout << "Average Turnaround Time = " << total_turn_around / processes.size() << endl;
+}
+int main() {
+    int n, choice;
+    vector<Process> processes;
+
+    cout << "Enter number of processes: ";
+    cin >> n;
+
+    for (int i = 0; i < n; i++) {
+        int at, bt, prio;
+        cout << "Enter Arrival Time, Burst Time and Priority for Process " << i + 1 << ": ";
+        cin >> at >> bt >> prio;
+        processes.push_back(Process(i + 1, at, bt, prio));
+    }
+
+    do {
+        cout << "\n--- CPU Scheduling Algorithms ---\n";
+        cout << "1. First Come First Serve (FCFS)\n";
+        cout << "2. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                FCFS(processes);
+                break;
+            case 2:
+                cout << "Exiting...\n";
+                break;
+            default:
+                cout << "Invalid choice!\n";
+        }
+
+    } while (choice != 2);
+
+    return 0;
+}
